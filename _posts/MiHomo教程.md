@@ -98,7 +98,12 @@ docker run -it --name=temp loskyertt/clashmeta:debian-v1.8.16 /bin/bash
 
 把`clashmeta`文件复制到宿主机：
 ```bash
-docker cp temp:/root/clashmeta ~/.
+docker cp temp:/root/clashmeta_backup/ ~/
+```
+
+重命名：
+```bash
+mv clashmeta_backup clashmeta
 ```
 
 可以把该临时容器停止并删除：
@@ -122,7 +127,6 @@ mihomo -d ./
 
 ![image04.png](https://s2.loli.net/2024/07/25/qxW3TZfYP5lBS9p.png)
 
-![.png](https://s2.loli.net/2024/07/25/jsT9lyfBAKaw6Jd.png)
 # 6.注意事项
 
 如果发现仍然不能科学上网，可以打开“设置”检查下“代理设置”，手动设置代理地址和端口`127.0.0.1:7890`（火狐浏览器可能需要在内置的浏览器设置中进行配置下）。对于 Windows 用户来说，其实操作逻辑都是一样的（当然也可以不用 docker ），配置完后注意设置防火墙就行。

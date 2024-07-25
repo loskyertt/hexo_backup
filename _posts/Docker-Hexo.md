@@ -90,6 +90,7 @@ docker commit <container_id> hexo:with-hexo
 ```
 
 `with-hexo`是镜像标签，可以自定义。这里的 `<container_id>` 是刚刚启动的容器的 ID。可以使用 `docker ps -a` 命令找到它。
+**注意：** 如果要把挂载的宿主机的文件提交到镜像里，需要提前做一个`cp`操作，即通过`docker cp`把宿主计内的文件复制到容器内，然后再提交。
 
 # 4.推送与备份镜像
 
