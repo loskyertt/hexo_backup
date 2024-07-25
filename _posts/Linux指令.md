@@ -2,7 +2,7 @@
 title: Linux 指令
 date: 2024-07-24 08:51:17
 tags:
-  - "Linux"
+  - "linux"
 excerpt: "主要用于记录下 Linux 指令，主要还是 EndeavourOS，不过除了包管理器，其它指令对各个发行版来说应该大差不差，当然记录的目的是为了方便自己查找。"
 cover: https://softwarelab.org/wp-content/uploads/Linux.jpg
 ---

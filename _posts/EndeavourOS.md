@@ -2,7 +2,7 @@
 title: EndeavourOS 使用记录
 date: 2024-07-18 16:21:15
 tags:
-  - "Linux"
+  - "linux"
   - "conda"
   - "docker"
 excerpt: "这篇文章主要记录自己使用EndeavourOS Linux（Arch系的发行版）的过程，有一些配置，以及遇到的一些问题和解决办法。理论上这些解决办法在其它Linux发行版下也适用。"
