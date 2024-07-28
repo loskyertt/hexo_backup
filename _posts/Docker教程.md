@@ -2,7 +2,7 @@
 title: Docker 教程
 date: 2024-07-24 10:55:53
 tags:
-  -"docker"
+  - "docker"
 excerpt: "记录下 Docker 的使用过程，比如配置镜像的记录和指令。"
 ---
 
@@ -90,6 +90,12 @@ docker system prune -a
   - `docker system prune`：清理所有未使用的容器、网络、挂载的卷和镜像。
   - `-a`：删除所有未使用的镜像，不仅仅是悬空的镜像（dangling images）。
 
+## 1.6 网络配置
+
+```bash
+docker create --name =<name>  --network host image:tag 
+```
+使用参数`--network host`可以让容器共享主机的网络栈，通常用于需要高性能网络连接或访问主机网络的应用。也就是说容器内的端口与主机的都对应。
 
 # 二、Docker-MySQL 配置
 

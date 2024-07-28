@@ -2,10 +2,10 @@
 title: MiHomo(Clash Meta) 纯内核使用教程
 date: 2024-07-25 06:49:04
 tags:
-    -"docker"
-    -"linux"
-    -"proxy"
-    -"clash"
+    - "docker"
+    - "linux"
+    - "proxy"
+    - "clash"
 excerpt: "这篇文章主要是记录自己使用 Clash Meta 的一些心得，因为强迫症的原因，所以是通过 docker 来部署整个代理服务的。"
 ---
 

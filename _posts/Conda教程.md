@@ -2,7 +2,7 @@
 title: Conda教程
 date: 2024-07-19 03:37:03
 tags:
-    -"conda"
+    - "conda"
 excerpt: "记录自己 conda 的使用过程。"
 ---
 

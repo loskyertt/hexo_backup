@@ -1,5 +1,5 @@
 ---
-title: proxy-settings
+title: Proxy Settings
 date: 2024-07-19 03:36:58
 tags:
     - "proxy"
