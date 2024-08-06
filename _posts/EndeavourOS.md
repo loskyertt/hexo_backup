@@ -360,7 +360,19 @@ export QT_IM_MODULE=fcitx
 export XMODIFIERS="@im=fcitx"
 ```
 
-## 7.2 其它（没试过）
+如果在`~`目录创建的`.xprofile`配置文件没有生效，可以这样做：
+```bash
+kate /etc/environment
+```
+
+然后在里面加入：
+```txt
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS="@im=fcitx"
+```
+
+## 4.2 其它（没试过）
 
 **方式一：**
 ```bash
@@ -392,22 +404,6 @@ XMODIFIERS=@im=fcitx
 SDL_IM_MODULE=fcitx
 ```
 
-**方式二：**
-```bash
-yay -S fcitx fcitx-configtool fcitx-im
-
-# 配置
-kate ~/.pam_environment
-```
-输入以下内容：
-```
-GTK_IM_MODULE DEFAULT=fcitx
-QT_IM_MODULE  DEFAULT=fcitx
-XMODIFIERS    DEFAULT=\@im=fcitx
-SDL_IM_MODULE DEFAULT=fcitx
-```
-
-
 # 五、其它问题汇总
 
 ## 5.1 证书安装问题
@@ -428,23 +424,38 @@ sudo update-ca-trust
 ```
 ------------一般到这里就能解决了-------------
 
-3. **更换软件源**：
-- 编辑`/etc/pacman.d/mirrorlist`文件，选择一个新的软件源。
-- 可以使用`reflector`来自动选择最快的软件源：
-```bash
-sudo reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
-```
-- 更新软件包数据库：
-```bash
-sudo pacman -Syy
-```
-
-4. **重新安装软件包**：
+1. **重新安装软件包**：
 可以尝试重新安装`ca-certificates`和`ca-certificates-utils`：
 ```bash
 sudo pacman -S ca-certificates ca-certificates-utils
 ```
 
+## 5.2 镜像源问题
+
+如果下载或者更新速度较慢，可以用 Arch 清华镜像源：
+```bash
+kate /etc/pacman.d/mirrorlist
+```
+然后在首行加上：
+```txt
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch
+```
+
+## 5.3 签名验证问题
+
+```txt
+(735/735) 正在检查软件包完整性                        [------------------------------------] 100% **错误：**libinstpatch: 来自 "Brett Cornwall <brett@i--b.com>" 的签名是未知信任的- **:: 文件 /var/cache/pacman/pkg/libinstpatch-1.1.6-3-x86_64.pkg.tar.zst 已损坏 (无效或已损坏的软件包 (PGP 签名))**. **打算删除吗？ [Y/n] ** **错误：**fluidsynth: 来自 "Brett Cornwall <brett@i--b.com>" 的签名是未知信任的**坏** **:: 文件 /var/cache/pacman/pkg/fluidsynth-2.3.6-1-x86_64.pkg.tar.zst 已损坏 (无效或已损坏的软件包 (PGP 签名)).** **打算删除吗？ [Y/n]
+```
+
+如果遇到以上这种问题（比如在执行`sudo pacman -Syu`时），可以这样做：
+```bash
+kate /etc/pacman.conf
+```
+
+然后找到`SigLevel`那一行，暂时禁用签名检查（这是一个临时的、有风险的解决方案），修改为：
+```txt
+SigLevel = Never
+```
 
 # 六、miniconda3 配置
 
