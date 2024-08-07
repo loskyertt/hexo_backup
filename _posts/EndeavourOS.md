@@ -457,6 +457,33 @@ kate /etc/pacman.conf
 SigLevel = Never
 ```
 
+## 5.4 文件未通过校验
+
+比如在构建包时有类似的如下报错信息：
+```txt
+ 正在验证 source 文件，
+ 使用sha512sums... 
+  nekoray ... 通过
+  nekobox.sh ... 通过
+  nekobox.desktop ... 通过
+  1350.patch ... 失败. ==> 错误： 一个或多个文件没有通过有效性检查！0
+```
+
+1. **清理之前的构建：**
+```bash
+makepkg --clean
+```
+
+2. **更新 PKGBUILD 文件中的校验和。进入构建文件的目录，然后使用以下命令：**
+```bash
+updpkgsums
+```
+
+3. **重新构建：**
+```bash
+makepkg -si
+```
+
 # 六、miniconda3 配置
 
 **注：** 如果用的是`miniforge`，操作方式与此类似。
@@ -713,3 +740,16 @@ docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}\t{{.Names
 ```txt
 alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}\t{{.Names}}"'
 ```
+
+# 八、美化
+
+## 8.1 推荐全局主题
+
+1. 全局主题下载：
+[![pkxNlJH.png](https://s21.ax1x.com/2024/08/06/pkxNlJH.png)](https://imgse.com/i/pkxNlJH)
+
+2. plasma 外观样式：
+[![pkxNQFe.png](https://s21.ax1x.com/2024/08/06/pkxNQFe.png)](https://imgse.com/i/pkxNQFe)
+
+3. 示例：
+[![pkxN1Wd.png](https://s21.ax1x.com/2024/08/06/pkxN1Wd.png)](https://imgse.com/i/pkxN1Wd)
