@@ -85,6 +85,8 @@ dpkg -i mihomo-linux-amd64-v1.18.6.deb
 
 # 5.使用现成的镜像配置
 
+## 5.1 方式一
+
 如果以上步骤觉得太麻烦，可以使用我推送到 Docker Hub 上的镜像：
 ```bash
 docker pull loskyertt/clashmeta:debian-v1.8.16
@@ -123,14 +125,45 @@ cd /root/clashmeta
 mihomo -d ./
 ```
 然后打开浏览器输入`http://127.0.0.1:9090/ui`就能进入代理界面。
+
+## 5.2 方式二（推荐）
+
+还是使用现成的镜像：
+```bash
+docker pull loskyertt/clashmeta:1.8.16
+```
+
+直接创建容器：
+```bash
+docker run -itd --restart always --name clashmeta --workdir /clashmeta/ -p 7890:7890 -p 9090:9090 loskyertt/clashmeta:1.8.16 mihomo -d ./
+```
+
+把配置文件复制到主机当前目录：
+```bash
+docker cp clashmeta:/clashmeta/config.yaml .
+```
+
+修改配置文件，在里面填入自己的订阅链接，然后重新把配置文件复制进去覆盖掉：
+```bash
+docker cp config.yaml clashmeta:/clashmeta/
+```
+
+重启容器：
+```bash
+docker restart clashmeta
+```
+然后打开浏览器输入`http://127.0.0.1:9090/ui`就能进入代理界面。
+
+# 6.结果图
+
 ![image03.png](https://s2.loli.net/2024/07/25/ulftdepWhZK3YR4.png)
 
 ![image04.png](https://s2.loli.net/2024/07/25/qxW3TZfYP5lBS9p.png)
 
-# 6.注意事项
+# 7.注意事项
 
 如果发现仍然不能科学上网，可以打开“设置”检查下“代理设置”，手动设置代理地址和端口`127.0.0.1:7890`（火狐浏览器可能需要在内置的浏览器设置中进行配置下）。对于 Windows 用户来说，其实操作逻辑都是一样的（当然也可以不用 docker ），配置完后注意设置防火墙就行。
 
-# 6.参考教程
+# 8.参考教程
 
 - [【进阶使用】Clash Meta 纯内核使用教程|多机场融合|规则自动更新|Tun虚拟网卡模式|避免DNS泄露|WebRTC泄露](https://www.youtube.com/watch?v=d-2vCYLjXHs&t=23s)
