@@ -19,7 +19,7 @@ excerpt: "这是一篇如何在 Linux 环境下，用 Docker 搭建 Openwrt 作�
 
 # 2.准备工作
 
-建议是在虚拟机上安装一个 Linux 系统，我在实体机上（Linux 系统）试了下，是能成功，但是在该电脑上无法访问`Openwrt`的 `ip`地址，在其它设备（比如手机）能正常访问。
+建议是在虚拟机上安装一个 Linux 系统，我在实体机上（Linux 系统）试了下，是能成功，但是在该电脑上无法访问`Openwrt`的 `ip`地址，在其它设备（比如手机）能正常访问（需要多做一些配置）。
 
 ## 2.1 虚拟机安装
 
@@ -134,7 +134,7 @@ sudo systemctl start docker
 ```bash
 ip addr
 
-# 或者（不一点能用，可能没有预装 net-tools）
+# 或者（不一定能用，可能没有预装 net-tools）
 ifconfig
 ```
 
@@ -296,7 +296,85 @@ vi /etc/config/network
 
 后面我先学一下怎么用`OpenClash`，然后更新用`OpenClash`科学上网的教程。
 
-# 6.参考教程
+# 6.实体机中安装 docker + OpenWrt 的配置
+
+## 6.1 问题说明
+
+前面的步骤与在虚拟机中的一样，但是在创建并配置好 OpenWrt 的容器后，你会发现在宿主机中无法访问`192.168.2.3`（创建的容器的ip addr），但是其它设备（前提是在同一个网关下，比如手机）是能成功访问`192.168.2.3`的。
+
+**原因：**
+
+在`Docker`中使用`macvlan`网络驱动时，容器和宿主机的网络栈是分离的。这意味着：
+- 容器的网络接口`192.168.2.3`是在`macvlan`网络上，而宿主机的网络接口不能直接与`macvlan`网络中的容器进行通信。
+- 因为`macvlan`网络的特性，宿主机的网络接口不会自动知道`macvlan`网络中的设备。
+
+## 6.2 解决办法
+
+### 6.2.1 创建 maclan 接口
+
+创建一个名为`macvlan0`的新虚拟网络接口，它基于物理接口`enp0s3`：
+```bash
+sudo ip link add macvlan0 link enp0s3 type macvlan mode bridge
+```
+`macvlan`允许在一个物理网络接口上创建多个虚拟网络接口，每个都有自己的 MAC 地址。桥接模式允许 macvlan 接口相互通信。
+
+为这个新接口分配了 IP 地址`192.168.2.250`，使其成为`192.168.2.0/24`网络的一部分：
+```bash
+sudo ip addr add 192.168.2.250/24 dev macvlan0
+```
+激活这个新接口，使其能够开始网络通信：
+```bash
+sudo ip link set macvlan0 up
+```
+
+注意需要把`enp0s3`替换为自己实际的网络驱动接口。这个时候在浏览器输入`192.168.2.3`就拿正常访问了。
+
+这种配置的主要用途是允许主机直接参与到`macvlan`网络中，这对于与 Docker macvlan 网络中的容器通信特别有用。它创建了一个"桥梁"，让主机能够与 macvlan 网络中的设备（如 Docker 容器）进行直接通信，而不需要通过 Docker 的网络栈。
+
+### 6.2.2 撤销创建的 macvlan 配置
+
+如果要删除创建的`macvlan`接口，可以进行以下操作：
+
+1. 删除 IP 地址:
+```bash
+sudo ip addr del 192.168.2.250/24 dev macvlan0
+```
+2. 关闭 macvlan 接口:
+```bash
+sudo ip link set macvlan0 down
+```
+3. 删除 macvlan 接口:
+```bash
+sudo ip link del macvlan0
+```
+
+解释：
+- `ip addr del`: 删除之前添加的 IP 地址
+- `ip link set down`: 关闭网络接口
+- `ip link del`: 完全删除网络接口
+
+执行这些命令后，你创建的`macvlan`接口及其配置就会被完全移除。
+
+额外提示：
+
+### 6.2.3  查看当前配置:
+
+   在执行这些步骤之前和之后，你可以使用以下命令查看网络配置，以确保更改已经生效：
+   ```bash
+   ip addr show
+   ip link show
+   ```
+
+2. 保存配置:
+   如果你经常需要切换这些配置，可以考虑创建脚本来自动化这个过程。例如，创建一个脚本来添加配置，另一个脚本来删除配置。
+
+3. 系统重启:
+   请注意，这些更改在系统重启后不会保持。如果你希望这些更改是永久的，需要将它们添加到网络配置文件中或创建一个系统启动脚本。
+
+4. 小心操作:
+   在执行这些命令时要小心，特别是如果你是通过远程连接（如 SSH）管理系统。错误的网络配置可能会导致你失去对系统的访问。
+
+# 7.参考教程
 
 - [docker + openwrt把windows变成最强软路由，游戏、翻墙两不误(Linux-Mint/ubuntu、VirtualBox、docker、openwrt)](https://www.youtube.com/watch?v=6OeGOK2-1zo&list=PL7XUZPsvfw3CKvDijuA5CO_oLbBwJCYTt&index=4)
 - [Openwrt Docker 镜像 安装详细过程实现科学上网，没有设备也可以体验|软路由|旁路网关](https://www.youtube.com/watch?v=mlsTzDsBhLs&list=PL7XUZPsvfw3CKvDijuA5CO_oLbBwJCYTt&index=6)
