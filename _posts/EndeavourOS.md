@@ -406,28 +406,29 @@ SDL_IM_MODULE=fcitx
 
 # 五、其它问题汇总
 
-## 5.1 证书安装问题
-有时候可能无法安装`ca-certificates`这一系列证书，排除掉网络问题后，大概率就是时间问题。解决办法：
+## 5.1 安装软件时的证书问题
 
-1. **同步系统时间**：
-运行以下命令以确保系统时间是准确的：
-```bash
-sudo ntpd -qg
-sudo hwclock --systohc
-```
+1. 首先，更新你的系统证书:
 
-2. **手动更新CA证书**：
-- 将信任的CA证书复制到`/etc/pki/ca-trust/source/anchors/`。确保证书是PEM或DER格式。
-- 然后，运行以下命令来更新系统中的CA证书：
 ```bash
 sudo update-ca-trust
 ```
-------------一般到这里就能解决了-------------
 
-1. **重新安装软件包**：
-可以尝试重新安装`ca-certificates`和`ca-certificates-utils`：
+2. 如果上面的方法不起作用，你可以尝试临时禁用SSL验证。这不是一个安全的长期解决方案，但可以帮助你确定问题是否确实与证书有关:
+
 ```bash
-sudo pacman -S ca-certificates ca-certificates-utils
+makepkg -si --skippgpcheck
+```
+
+3. 最后，确保你的系统时间是正确的，因为时间不正确也可能导致SSL证书验证失败:
+
+```bash
+timedatectl status
+```
+
+如果时间不正确，可以同步:
+```bash
+sudo timedatectl set-ntp true
 ```
 
 ## 5.2 镜像源问题
@@ -478,6 +479,7 @@ makepkg --clean
 ```bash
 updpkgsums
 ```
+它会自动下载源文件（如果需要），计算新的校验和，并更新 PKGBUILD 文件。
 
 3. **重新构建：**
 ```bash
@@ -734,7 +736,7 @@ docker ps -a
 
 # 格式化查看容器
 docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}\t{{.Names}}"
-   ```
+```
 
 命令简化（推荐加到.bashrc或者.zshrc中）：
 ```txt
