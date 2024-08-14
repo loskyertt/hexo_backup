@@ -439,7 +439,11 @@ kate /etc/pacman.d/mirrorlist
 ```
 然后在首行加上：
 ```txt
+# arch 清华镜像源
 Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch
+# arch 稳定镜像源
+Server = https://mirror.archlinux.org/$repo/os/$arch
+Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch
 ```
 
 ## 5.3 签名验证问题
