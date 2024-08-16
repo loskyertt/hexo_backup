@@ -730,21 +730,26 @@ Environment=HTTP_PROXY=http://127.0.0.1:2334 HTTPS_PROXY=http://127.0.0.1:2334
 
 ## 7.4 命令简化配置
 
-查看容器：
+**以下推荐加到.bashrc或者.zshrc中。**
+
+1. 格式化查看容器：
 ```bash
-# 查看运行中的容器
-docker ps
-
-# 查看所用容器
-docker ps -a
-
-# 格式化查看容器
 docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}\t{{.Names}}"
 ```
 
-命令简化（推荐加到.bashrc或者.zshrc中）：
+命令简化：
 ```txt
 alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}\t{{.Names}}"'
+```
+
+2. 查看网络配置：
+```bash
+docker inspect --format='{{.HostConfig.NetworkMode}}' <容器名/容器ID>
+```
+
+命令简化：
+```txt
+alias din='docker inspect --format='{{.HostConfig.NetworkMode}}''
 ```
 
 # 八、美化

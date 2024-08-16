@@ -1,5 +1,5 @@
 ---
-title: Linux(EndeavourOS) 给 Steam 设置代理
+title: Linux(EndeavourOS) 下给 Steam 设置代理
 date: 2024-07-24 15:17:15
 tags:
   - "linux"
