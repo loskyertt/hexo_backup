@@ -117,11 +117,12 @@ inxi -G
 
 # 二、终端代理设置
 
-建议加上，在进行通过终端的下载、更新系统、`conda`下载或者`git clone`时，能走代理来提高下载速度。但是`docker`需要单独配置一套代理。
+建议加上，在进行通过终端的下载、更新系统、`conda`下载或者`git clone`时，能走代理来提高下载速度。但是`docker`需要单独配置一套代理。`zsh`和`bash`都可以用这种方式。
 
 ```bash
 kate ~/.zshrc
 ```
+`bash`需要在`.bashrc`中修改。
 
 - **在`.zshrc`中添加以下内容：**
 
@@ -153,10 +154,23 @@ source ~/.zshrc
 env | grep -i proxy
 ```
 
-
 # 三、zsh配置
 
-## 3.1 样式配置（prompt/PS1）
+## 3.1 切换 zsh 为默认终端
+
+要确保已经安装了`zsh`：
+```bash
+chsh -s $(which zsh)
+```
+
+通常要重启主机才会生效。
+
+验证默认`shell`
+```bash
+echo $SHELL
+```
+
+## 3.2 样式配置（prompt/PS1）
 
   | Code   | Info                              |
   | ------ |:---------------------------------:|
@@ -190,33 +204,25 @@ parse_git_branch() {
 }
 ```
 
-### 3.1.1推荐配置：
+### 3.2.1推荐配置：
 
-- **配置1：**
-```
-# PROMPT
-parse_git_branch() {
-  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
-}
-NEWLINE=$'\n' # 换行
-PS1="%B%F{2}%D%f %F{60}%*%f%b [%F{184}%n%f@%F{30}%~%f]$(parse_git_branch)${NEWLINE}%F{111}$%f "
-```
-
-- **配置2：**
+- **主机1配置：**
 ```txt
 # PROMPT
 NEWLINE=$'\n' # 换行
-PS1="%B%F{2}%D%f %F{60}%*%f%b [%F{184}%n%f@%F{30}%~%f]${NEWLINE}%F{111}╰─❯%f"
+PS1="%B%F{2}%D%f %F{3}%*%f%b [%F{184}%%n-M%f@%F{30}%~%f]${NEWLINE}%F{111}╰─❯%f"
 ```
 
-- **配置3：**
+- **主机2配置：**
 ```txt
 # PROMPT
-ZSH_NEWLINE=$'\n'
-export PROMPT=" %F{46}%F %(?.%F{green}√.%F{red}?%?)%f  %B%F{69}%~ ${ZSH_NEWLINE} %F{119}==>%f%b "
+NEWLINE=$'\n' # 换行
+PS1="%U%B%F{43}%D%f %F{30}%*%f%b%u [%F{184}%n-%M%f@%F{30}%~%f]${NEWLINE}%F{220}==>%f"
 ```
 
-## 3.2 插件配置
+推荐两套主机用不同的配置，这样在用 SSH 进行远程操控时，方便辨别。
+
+## 3.3 插件配置
 
 - **备份：**
 ```bash
@@ -284,42 +290,7 @@ ln -s ~/.zsh/.zshrc ~/.zshrc
 
 source ~/.zshrc
 ```
-
 可以通过`ls -la`来查看是否链接成功。
-
-## 3.3 完整的配置内容
-
-```txt
-###-----------------zsh config--------------------
-### ZSH HOME
-export ZSH=$HOME/.zsh
-
-### ---- history config ----------
-export HISTFILE=$ZSH/.zsh_history
-
-# How many commands zsh will load to memory.
-export HISTSIZE=10000
-
-# How maney commands history will save on file.
-export SAVEHIST=10000
-
-# History won't save duplicates.
-setopt HIST_IGNORE_ALL_DUPS
-
-# History won't show duplicates on search.
-setopt HIST_FIND_NO_DUPS
-
-source $ZSH/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
-fpath=($ZSH/plugins/zsh-completions/src $fpath)
-
-# zsh-autosuggestions:config
-source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bg=cyan,bold,underline"
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-
-# end config
-```
 
 ## 3.4 问题汇总
 
@@ -461,6 +432,7 @@ kate /etc/pacman.conf
 ```txt
 SigLevel = Never
 ```
+为了保证主机安全，在安装好后记得要修改回来！！！
 
 ## 5.4 文件未通过校验
 
@@ -649,11 +621,9 @@ sudo systemctl status docker
 ```sh
 # 设置开机自启动
 sudo systemctl enable docker
-sudo systemctl enable docker.socket
 
 # 关闭开机自启动
 sudo systemctl disable docker
-sudo systemctl disable docker.socket
 ```
 
 ### 7.2.2 添加用户到 docker 组
