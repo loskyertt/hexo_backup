@@ -102,7 +102,7 @@ parse_git_branch() {
 ```txt
 # PROMPT
 NEWLINE=$'\n' # 换行
-PS1="%B%F{2}%D%f %F{3}%*%f%b [%F{184}%%n-M%f@%F{30}%~%f]${NEWLINE}%F{111}╰─❯%f"
+PS1="%F{111}╭─%f%B%F{2}%D%f %F{3}%*%f%b [%F{184}%n-%M%f@%F{30}%~%f]${NEWLINE}%F{111}╰─❯%f"
 ```
 
 - **主机2配置：**
