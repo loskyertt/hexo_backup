@@ -3,8 +3,6 @@ title: EndeavourOS 使用记录
 date: 2024-07-18 16:21:15
 tags:
   - "linux"
-  - "conda"
-  - "docker"
 excerpt: "这篇文章主要记录自己使用EndeavourOS Linux（Arch系的发行版）的过程，有一些配置，以及遇到的一些问题和解决办法。理论上这些解决办法在其它Linux发行版下也适用。"
 cover: https://i0.wp.com/endeavouros.com/wp-content/uploads/2023/10/Endy_planet_ARM.png?resize=1536%2C864&ssl=1
 ---
@@ -115,207 +113,9 @@ inxi -G
 - 如果你需要运行 32 位应用程序，仍然需要安装 `lib32-nvidia-utils`。
 
 
-# 二、终端代理设置
+# 二、中文输入法配置
 
-建议加上，在进行通过终端的下载、更新系统、`conda`下载或者`git clone`时，能走代理来提高下载速度。但是`docker`需要单独配置一套代理。`zsh`和`bash`都可以用这种方式。
-
-```bash
-kate ~/.zshrc
-```
-`bash`需要在`.bashrc`中修改。
-
-- **在`.zshrc`中添加以下内容：**
-
-```txt
-# where proxy
-proxy(){
-  export http_proxy="http://127.0.0.1:2334"
-  export https_proxy="http://127.0.0.1:2334"
-  echo "HTTP Proxy on by hiddify"
-}
-
-# where noproxy
-noproxy(){
-  unset http_proxy
-  unset https_proxy
-  echo "HTTP Proxy off"
-}
-```
-根据实际情况填写自己的代理端口。
-
-```bash
-source ~/.zshrc
-```
-
-通过在终端输入`proxy`或者`noproxy`来开启或关闭代理。
-
-输入下面指令，可以查看终端代理地址：
-```bash
-env | grep -i proxy
-```
-
-# 三、zsh配置
-
-## 3.1 切换 zsh 为默认终端
-
-要确保已经安装了`zsh`：
-```bash
-chsh -s $(which zsh)
-```
-
-通常要重启主机才会生效。
-
-验证默认`shell`
-```bash
-echo $SHELL
-```
-
-## 3.2 样式配置（prompt/PS1）
-
-  | Code   | Info                              |
-  | ------ |:---------------------------------:|
-  | %T     | 系统时间（时：分）                         |
-  | %*     | 系统时间（时：分：秒）                       |
-  | %D     | 系统日期（年-月-日）                       |
-  | %n     | 用户名称（即：当前登陆终端的用户的名称，和whami命令输出相同） |
-  | %B     | 开始到结束使用粗体打印                       |
-  | %b     | 开始到结束使用粗体打印                       |
-  | %U     | 开始到结束使用下划线打印                      |
-  | %u     | 开始到结束使用下划线打印                      |
-  | %d     | 你当前的工作目录                          |
-  | %~     | 你目前的目录相对于～的相对路径                   |
-  | %M     | 计算机的主机名                           |
-  | %m     | 计算机的主机名（在第一个句号之前截断）               |
-  | %l     | 你当前的tty                           |
-  | %F{色码} | 用来设定某个颜色的开始                       |
-  | %f     | 用来设定成预设的样式， 也可以说是设定好的颜色结束         |
-
-- **换行示例：**
-
-```
-NEWLINE=$'\n'
-PROMPT="%{$fg[green]%}%d %t %{$reset_color%}%# ${NEWLINE}"
-```
-
-- **显示git分支：**
-```
-parse_git_branch() {
-  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
-}
-```
-
-### 3.2.1推荐配置：
-
-- **主机1配置：**
-```txt
-# PROMPT
-NEWLINE=$'\n' # 换行
-PS1="%B%F{2}%D%f %F{3}%*%f%b [%F{184}%%n-M%f@%F{30}%~%f]${NEWLINE}%F{111}╰─❯%f"
-```
-
-- **主机2配置：**
-```txt
-# PROMPT
-NEWLINE=$'\n' # 换行
-PS1="%U%B%F{43}%D%f %F{30}%*%f%b%u [%F{184}%n-%M%f@%F{30}%~%f]${NEWLINE}%F{220}==>%f"
-```
-
-推荐两套主机用不同的配置，这样在用 SSH 进行远程操控时，方便辨别。
-
-## 3.3 插件配置
-
-- **备份：**
-```bash
-cp ~/.zshrc ~/.zshrc.backup
-```
-
-- **创建配置文件夹：**
-```bash
-mkdir -p .zsh/plugins
-cp .zshrc .zsh/
-mv .zsh_history .zsh/
-```
-注：若没有`.zsh_history`，那么需要用`touch`指令创建。
-
-- **然后编辑文件夹`.zsh`中的`.zshrc`copy，加上：**
-```txt
-### ZSH HOME
-export ZSH=$HOME/.zsh
-
-### ---- history config ----------
-export HISTFILE=$ZSH/.zsh_history
-
-# How many commands zsh will load to memory.
-export HISTSIZE=10000
-
-# How maney commands history will save on file.
-export SAVEHIST=10000
-
-# History won't save duplicates.
-setopt HIST_IGNORE_ALL_DUPS
-
-# History won't show duplicates on search.
-setopt HIST_FIND_NO_DUPS
-```
-
-- **安装插件：**
-```bash
-cd ~/.zsh/plugins
-
-git clone  https://github.com/zdharma-continuum/fast-syntax-highlighting.git
-
-git clone https://github.com/zsh-users/zsh-autosuggestions.git
-
-git clone https://github.com/zsh-users/zsh-completions.git
-```
-
-- **在`.zshrc`copy中添加：**
-```
-source $ZSH/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
-fpath=($ZSH/plugins/zsh-completions/src $fpath)
-
-# zsh-autosuggestions:config
-source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bg=cyan,bold,underline"
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-
-# end config
-```
-
-- **链接：**
-最后就是创建符号链接，这样我们就可以通过更改`~/.zshrc`Copy来同步更改`.zsh/.zshrc`Copy配置文件了。首先需要确认`~`目录下没有`.zshrc`文件，如果有，就`rm .zshrc`。此时可以开始创建符号链接了.
-```bash
-ln -s ~/.zsh/.zshrc ~/.zshrc
-
-source ~/.zshrc
-```
-可以通过`ls -la`来查看是否链接成功。
-
-## 3.4 问题汇总
-
-### 3.4.1 历史命令问题
-出现这种情况`zsh: corrupt history file /home/sky/.zsh/.zsh_history`。有的时候系统因为默写原因强行启动的时候会破坏zsh的历史文件。
-解决办法：
-```bash
-cp ~/.zsh_history ~/.zsh_history_backup
-rm ~/.zsh_history
-strings -eS ~/.zsh_history_backup > ~/.zsh_history
-fc -R ~/.zsh_history
-```
-如果上述步骤没有解决问题，可能是因为.zsh_history文件严重损坏。在这种情况下，需要放弃旧的历史记录并创建一个新的文件。
-
-### 3.4.2 安装 oh my zsh 可能会出现的问题
-
-**注意：** 如果是安装`oh my zsh`可能会出现下面的问题：
-
-1.发现安装完`oh my zsh`后终端中有些命令不能使用：
-编辑`.zshrc`发现里面内容都被替换掉了，之前的配置内容都被转移到一个叫`.zshrc.pre-oh-my-zsh`文件中。
-
-
-# 四、中文输入法配置
-
-## 4.1 推荐方式
+## 2.1 推荐方式
 
 ```bash
 yay -Sy fcitx-im fcitx-configtool
@@ -343,7 +143,7 @@ export QT_IM_MODULE=fcitx
 export XMODIFIERS="@im=fcitx"
 ```
 
-## 4.2 其它（没试过）
+## 2.2 其它（没试过）
 
 **方式一：**
 ```bash
@@ -375,9 +175,9 @@ XMODIFIERS=@im=fcitx
 SDL_IM_MODULE=fcitx
 ```
 
-# 五、其它问题汇总
+# 三、问题汇总
 
-## 5.1 安装软件时的证书问题
+## 3.1 安装软件时的证书问题
 
 1. 首先，更新你的系统证书:
 
@@ -402,7 +202,7 @@ timedatectl status
 sudo timedatectl set-ntp true
 ```
 
-## 5.2 镜像源问题
+## 3.2 镜像源问题
 
 如果下载或者更新速度较慢，可以用 Arch 清华镜像源：
 ```bash
@@ -417,7 +217,21 @@ Server = https://mirror.archlinux.org/$repo/os/$arch
 Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch
 ```
 
-## 5.3 签名验证问题
+**如果是在线安装系统的话，建议在`live`版镜像中，先改下镜像源配置：**
+
+进入`root`用户：
+```bash
+sudo su
+```
+
+```bash
+nano /etc/pacman.d/mirrorlist
+```
+然后把镜像源加进去。
+
+## 3.3 签名验证问题
+
+**建议先参考这篇官方文章：** [Signature and keyring](https://discovery.endeavouros.com/signature-and-keyring/pacman-keyring-issues/2021/03/)
 
 ```txt
 (735/735) 正在检查软件包完整性                        [------------------------------------] 100% **错误：**libinstpatch: 来自 "Brett Cornwall <brett@i--b.com>" 的签名是未知信任的- **:: 文件 /var/cache/pacman/pkg/libinstpatch-1.1.6-3-x86_64.pkg.tar.zst 已损坏 (无效或已损坏的软件包 (PGP 签名))**. **打算删除吗？ [Y/n] ** **错误：**fluidsynth: 来自 "Brett Cornwall <brett@i--b.com>" 的签名是未知信任的**坏** **:: 文件 /var/cache/pacman/pkg/fluidsynth-2.3.6-1-x86_64.pkg.tar.zst 已损坏 (无效或已损坏的软件包 (PGP 签名)).** **打算删除吗？ [Y/n]
@@ -434,7 +248,7 @@ SigLevel = Never
 ```
 为了保证主机安全，在安装好后记得要修改回来！！！
 
-## 5.4 文件未通过校验
+## 3.4 文件未通过校验
 
 比如在构建包时有类似的如下报错信息：
 ```txt
@@ -462,275 +276,13 @@ updpkgsums
 makepkg -si
 ```
 
-# 六、miniconda3 配置
+# 四、美化
 
-**注：** 如果用的是`miniforge`，操作方式与此类似。
+## 4.1 推荐全局主题
 
-## 6.1 把`conda`集成到`zsh`终端中
+建议去 KDE Store 下载主题，然后把下载的 **全局主题** 解压后，放到`~/.local/share/plasma/look-and-feel`目录下。
 
-### 6.1.1 详细步骤
+壁纸和全局主题斗比较推荐`Utterly Nord`，图标推荐`Dracula Circle`。（注意：要选择`plasma6`的）
 
-1. **添加`conda`环境变量：**
-
-把这行代码加入到`.zshrc`中：
-
-```txt
-export PATH=/opt/miniconda3/bin:$PATH
-```
-
-终端输入这行可以防止conda自动激活环境（建议加上）：
-
-```bash
-conda config --set auto_activate_base false
-```
-
-2. **重新加载 `~/.zshrc` 文件：**
-
-在终端中运行以下命令重新加载配置文件：
-
-```sh
-source ~/.zshrc
-```
-
-3. **运行 `conda init`：**
-
-初始化 conda 环境：
-
-```bash
-# 这是conda默认安装的位置
-/opt/miniconda3/bin/conda init zsh
-```
-
-4. **再次重新加载 `~/.zshrc` 文件：**
-
-再次运行以下命令重新加载配置文件：
-
-```sh
-source ~/.zshrc
-```
-
-### 6.1.2 验证
-
-验证 conda 是否配置好：
-
-```bash
-conda --version
-```
-
-### 6.1.3 一步到位操作
-
-可以不用管以上操作，直接把这段复制到`.zshrc`中，注意安装miniconda的路径：
-
-```bash
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/opt/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/opt/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
-```
-
-## 6.2 问题汇总
-
-### 6.2.1  OpenSSL 问题
-
-当运行`conda activate base`时，可能出现下面问题：
-
-```txt
- $ conda activate base
-Error while loading conda entry point: conda-content-trust (OpenSSL 3.0's legacy provider failed to load. This is a fatal error by default, but cryptography supports running without legacy algorithms by setting the environment variable CRYPTOGRAPHY_OPENSSL_NO_LEGACY. If you did not expect this error, you have likely made a mistake with your OpenSSL configuration.)
-
-CondaError: Run 'conda init' before 'conda activate'
-```
-
-根据该的错误信息，问题可能与 OpenSSL 版本有关。OpenSSL 3.0 引入了一些变化，可能导致与某些软件包的兼容性问题。在此情况下，设置环境变量`CRYPTOGRAPHY_OPENSSL_NO_LEGACY`可能会解决问题。
-
-- **解决方法：**
-
-编辑 `~/.zshrc` 文件，添加以下行到 `~/.zshrc` 文件：
-
-```txt
-export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
-```
-
-保存并退出编辑器，然后执行`source ~/.zshrc`。
-
-# 七、docker 配置
-
-## 7.1 安装 docker
-
-- **安装方式一：**
-
-通过`yay`直接安装（全局安装）：
-
-```bash
-yay -Sy docker docker-compose
-```
-`docker-compose`可选安装，它可以通过配置文件`Dockerfile`来构建镜像。
-
-- **安装方式二：**
-
-通过`conda`安装（局部安装，可全局使用）：
-
-首先需要创建虚拟环境用于存储安装的`docker`和`docker-compose`。
-
-```bash
-conda create --name docker python=3.12
-```
-Python版本可自己选择。
-
-```bash
-conda install docker docker-compose -c conda-forge
-```
-
-这里的`-c conda-forge`一定要加，默认的`conda.org`源没有`docker`。
-
-安装好的`docker`和`docker-compose`是在该路径下：
-`~/.conda/envs/docker/bin/docker`
-`~/.conda/envs/docker/bin/docker-compose`
-
-## 7.2 docker 基本操作
-
-### 7.2.1 docker 服务
-
-```sh
-# 启动docker服务
-sudo systemctl start docker
-
-# 关闭docker服务
-sudo systemctl stop docker.service docker.socket
-```
-
-检查`docker`服务状态：
-
-```sh
-sudo systemctl status docker
-```
-
-开机自启动设置：
-
-```sh
-# 设置开机自启动
-sudo systemctl enable docker
-
-# 关闭开机自启动
-sudo systemctl disable docker
-```
-
-### 7.2.2 添加用户到 docker 组
-
-为了避免每次运行`docker`命令时都需要使用 `sudo`，可以将当前用户添加到 `docker` 组：
-
-```sh
-sudo usermod -aG docker $USER
-```
-
-然后，重新登录以使更改生效，或者重新加载用户组信息：
-
-```sh
-# 登录
-newgrp docker
-
-# 退出
-exit
-```
-
-## 7.3 代理配置（推荐）
-
-1.创建`docker`相关的`systemd`目录，这个目录下的配置将覆盖`docker`的默认配置：
-
-```bash
-sudo mkdir -p /etc/systemd/system/docker.service.d
-```
-
-2.新建配置文件：
-
-```bash
-kate /etc/systemd/system/docker.service.d/proxy.conf
-```
-
-将以下内容复制到`proxy.conf`中：
-
-```txt
-[Service]
-Environment="HTTP_PROXY=http://127.0.0.1:2334"
-Environment="HTTPS_PROXY=http://127.0.0.1:2334"
-```
-
-这里需要根据自己实际的代理端口填写。
-
-3.如果自己建了私有的镜像仓库，需要`docker`绕过代理服务器直连，那么配置`NO_PROXY`变量：
-
-```
-[Service]
-Environment="HTTP_PROXY=http://proxy.example.com:80"
-Environment="HTTPS_PROXY=https://proxy.example.com:443"
-Environment="NO_PROXY=your-registry.com,10.10.10.10,*.example.com"
-```
-
-多个`NO_PROXY`变量的值用逗号分隔，而且可以使用通配符（*），极端情况下，如果`NO_PROXY=*`，那么所有请求都将不通过代理服务器。
-
-4.重新加载配置文件，重启`docker`：
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
-
-5.检查确认环境变量已经正确配置：
-
-```bash
-sudo systemctl show --property=Environment docker
-```
-
-像输出以下内容就成功了：
-
-```
-Environment=HTTP_PROXY=http://127.0.0.1:2334 HTTPS_PROXY=http://127.0.0.1:2334
-```
-
-## 7.4 命令简化配置
-
-**以下推荐加到.bashrc或者.zshrc中。**
-
-1. 格式化查看容器：
-```bash
-docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}\t{{.Names}}"
-```
-
-命令简化：
-```txt
-alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}\t{{.Names}}"'
-```
-
-2. 查看网络配置：
-```bash
-docker inspect --format='{{.HostConfig.NetworkMode}}' <容器名/容器ID>
-```
-
-命令简化：
-```txt
-alias din='docker inspect --format='{{.HostConfig.NetworkMode}}''
-```
-
-# 八、美化
-
-## 8.1 推荐全局主题
-
-1. 全局主题下载：
-[![pkxNlJH.png](https://s21.ax1x.com/2024/08/06/pkxNlJH.png)](https://imgse.com/i/pkxNlJH)
-
-2. plasma 外观样式：
-[![pkxNQFe.png](https://s21.ax1x.com/2024/08/06/pkxNQFe.png)](https://imgse.com/i/pkxNQFe)
-
-3. 示例：
-[![pkxN1Wd.png](https://s21.ax1x.com/2024/08/06/pkxN1Wd.png)](https://imgse.com/i/pkxN1Wd)
+参考图：
+[![Utterly Nord](https://s21.ax1x.com/2024/08/25/pAkSS6H.png)](https://imgse.com/i/pAkSS6H)

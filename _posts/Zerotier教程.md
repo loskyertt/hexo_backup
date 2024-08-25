@@ -3,7 +3,7 @@ title: Zerotier 使用教程
 date: 2024-08-18 13:25:39
 tags:
   - "linux"
-  - “ssh"
+  - "ssh"
   - "内网穿透"
 excerpt: "主要记录平时用到的`ssh`指令以及使用方法。"
 ---

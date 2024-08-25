@@ -3,7 +3,7 @@ title: SSH 教程
 date: 2024-08-16 17:04:17
 tags:
   - "linux"
-  - “ssh"
+  - "ssh"
 excerpt: "主要记录平时用到的`ssh`指令以及使用方法。"
 ---
 
