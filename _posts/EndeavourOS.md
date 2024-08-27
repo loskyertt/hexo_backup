@@ -12,6 +12,8 @@ cover: https://i0.wp.com/endeavouros.com/wp-content/uploads/2023/10/Endy_planet_
 
 `EndeavourOS`对N卡用户的支持比较友好，在安装该系统时，选择有`Nvidia`那一行的进行安装即可，会自动安装最新的适应当前显卡的闭源驱动。如果是`Arch Linux`，建议看这篇文章，同时提到有双显卡如何进行切换 [Arch Linux 安装使用教程](https://archlinuxstudio.github.io/ArchLinuxTutorial/#/)，如果是`Arch`系其它发行版（像`Manjaro`），请自行找教程，这里提到的方式不一定适用你。
 
+CUDA 安装参考这篇教程：[教你在Arch Linux安裝Nvidia、CUDA、cuDNN、TensorRT专有驱动程序](https://ivonblog.com/posts/archlinux-install-nvidia-drivers/)
+
 ## 1.1 安装方式一
 
 - **全面更新系统以及安装依赖工具**
@@ -276,13 +278,33 @@ updpkgsums
 makepkg -si
 ```
 
-# 四、美化
+# 四、美化（KDE Plasma6）
 
-## 4.1 推荐全局主题
+注意下的主题和组件需要是`plasma6`的，作者一般会说明。
+
+## 4.1 全局主题
 
 建议去 KDE Store 下载主题，然后把下载的 **全局主题** 解压后，放到`~/.local/share/plasma/look-and-feel`目录下。
 
-壁纸和全局主题斗比较推荐`Utterly Nord`，图标推荐`Dracula Circle`。（注意：要选择`plasma6`的）
+壁纸和全局主题推荐`Utterly Nord`，图标推荐`Dracula Circle`。
 
 参考图：
 [![Utterly Nord](https://s21.ax1x.com/2024/08/25/pAkSS6H.png)](https://imgse.com/i/pAkSS6H)
+
+## 4.2 组件
+
+[musicWaves](https://store.kde.org/p/2186442)
+[thot CPU Plasma 6](https://www.pling.com/p/2148472/)
+
+解压后，把文件夹移动到`~/.local/share/plasma/plasmoids/`目录下。
+
+参考图：
+[![Desktop Widgets](https://s21.ax1x.com/2024/08/27/pAksXO1.md.png)](https://imgse.com/i/pAksXO1)
+
+## 4.3 Login SDDM
+
+建议先在`KDE Store`下载好，然后解压到存放登录界面的目录下。
+
+[Nordic sddm Plasma 6](https://www.pling.com/p/2144235/)
+
+把解压后的文件移到`/usr/share/sddm/themes/`目录下。
