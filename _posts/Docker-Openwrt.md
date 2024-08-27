@@ -8,6 +8,7 @@ tags:
     - "openwrt"
     - "虚拟机"
 excerpt: "这是一篇如何在 Linux 环境下，用 Docker 搭建 Openwrt 作旁路由的教程。"
+categories: "科学上网"
 ---
 
 
