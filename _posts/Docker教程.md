@@ -22,6 +22,7 @@ docker inspect <镜像名或ID>
 # 容器
 docker inspect <容器名或ID>
 ```
+可以同过这种方式查看镜像里的主要`workdir`在哪里，这样可以知道应该挂载镜像里的哪个目录。
 
 ## 1.3 查看容器映射到本地的端口
 
@@ -124,107 +125,11 @@ docker run -p 8080:80/udp my_image
 
 这个命令将容器的 `80` 端口映射到宿主机的 `8080` 端口，使用 UDP 协议。
 
-# 二、Docker-MySQL 配置
+# 二、容器操作
 
-## 2.1 拉取镜像与创建容器
+这里以`ubutnu`镜像为例。
 
-1. **拉取 MySQL 镜像：**
-   通过运行 `docker pull mysql[:版本号]`，版本号可选，默认是latest。
-
-2. **创建并运行 MySQL 容器（推荐）：**
-   使用以下命令来运行 MySQL 容器。这里假设想在主机上绑定3306端口，并设置一个root用户的密码：
-
-```bash
-docker run \
---name some-mysql \
--e MYSQL_ROOT_PASSWORD=1234 \
--p 3306:3306 \
--v ~/docker_volume/mysql/data:/var/lib/mysql \
--v ~/docker_volume/mysql/init:/docker-entrypoint-initdb.d \
--v ~/docker_volume/mysql/conf:/etc/mysql/conf.d \
--d mysql:<版本号>
-```
-
-**以上命令的说明：**
-- `--name some-mysql`：给容器指定一个名称，比如 `some-mysql`。
-- `-e MYSQL_ROOT_PASSWORD=1234`：设置root用户的密码为 `1234`。
-- `mysql:latest`：使用最新版本的 MySQL 镜像。
-- `p`：设置端口，`3306:3306`中，前者是宿主机的端口，可以自定义，后者是映射到容器的端口。默认是`TCP`协议。
-- `-v`：挂载容器里的文件（`~/docker_volume/mysql/data`为本地目录）。**注意：** 要先创建好对应的文件路径！！同时本地文件夹会把容器内的文件夹完全覆盖！
-
-## 2.2 连接到容器
-
-1. **连接到 MySQL 容器：**
-
-进入到容器内部然后进行连接：
-```bash
-docker exec -it some-mysql bash
-
-mysql -uroot -p
-```
-
-直接连接到容器：
-```bash
-docker exec -it some-mysql mysql -uroot -p
-```
-这会启动一个终端会话，并要求输入上面设置的root用户的密码 (`1234`)。
-
-以上命令的说明：
-1. **docker exec：**
-- **含义：** 在一个已经运行的容器内执行命令。
-- **用途：** 允许你在运行的容器中执行新的命令。
-
-2. **-it：**
-- **`-i` (interactive)：** 保持标准输入（stdin）打开，使得你可以与容器中的进程进行交互。
-- **`-t` (tty)：** 分配一个伪终端，提供一个终端会话环境。这两个选项一起使用可以进入容器并交互。
-
-3. **some-mysql：**
-- **含义：** 容器的名称或 ID。
-
-4. **mysql：**
-- **含义：** 这是在容器内执行的命令。在这个例子中，是启动 MySQL 客户端。
-- **用途：** 连接到 MySQL 数据库。
-
-5. **-uroot：**
-- **`-u`：** 指定 MySQL 客户端的用户名。
-- **root：** MySQL 数据库的用户名。在这个例子中，使用的是 `root` 用户。
-
-6. **`-p`：**
-- **含义：** 提示输入 MySQL 用户的密码。
-- **用途：** 在执行命令后，你会被提示输入 `root` 用户的密码。这个密码是在运行容器时通过 `MYSQL_ROOT_PASSWORD` 环境变量设置的。
-
-以上命令的 `-p 3306:3306` 会将主机的3306端口映射到容器的3306端口，这样可以从主机上的MySQL客户端连接到容器中的MySQL服务。
-
-## 2.3 更改容器信息
-
-### 2.3.1 方法一：停止并删除现有容器
-
-首先，停止并删除现有的 `mysql-test` 容器：
-```bash
-docker start mysql-test        # 运行
-docker stop mysql-test        # 停止
-docker rm mysql-test        # 删除
-```
-然后再重新创建`mysql-test`即可。
-
-### 2.3.2 方法二：不同的容器名称
-
-可以使用不同的名称来运行容器，这样就不需要删除现有的容器。例如：
-```bash
-docker run --name mysql-test-2 -e MYSQL_ROOT_PASSWORD=0403 -p 3307:3306 -d mysql:latest
-```
-这样会启动一个新容器，名称为 `mysql-test-2`，并绑定主机的3307端口到容器的3306端口。
-
-## 2.4 查看容器信息
-
-查看容器或镜像内部信息（如端口，ip地址，挂载卷等）：
-```
-docker inspect <容器名/容器ID/镜像名/镜像ID>
-```
-
-# 三、Docker-Ubuntu 配置
-
-## 3.1 运行并创建容器
+## 2.1 运行并创建容器
 
 ```bash
 docker run -itd --name ubuntu-test ubuntu
@@ -232,7 +137,7 @@ docker run -itd --name ubuntu-test ubuntu
 
 **注意：**  这里必须加上`-it`。像ubuntu这种镜像在创建容器时需要分配一个伪终端让它在后台持续运行，否则会在启动容器后立马退出运行。
 
-## 3.2 进入容器
+## 2.2 进入容器
 
 ```bash
 docker exec -it ubuntu-test bash
@@ -241,3 +146,29 @@ docker exec -it ubuntu-test bash
 要退出正在交互模式下的容器终端，可以执行以下操作：
 1. 按下 `Ctrl + D` 快捷键。
 2. 或者在容器终端中键入 `exit` 命令并按回车键。
+
+
+# 三、容器挂载（`volume`）与绑定挂载（`bind`）的区别
+
+## 3.1 位置
+
+卷挂载的目录是在`/var/lib/docker/volumes/`下，绑定挂载的目录根据用户自定义。
+
+## 3.2 卷挂载 (`docker volume`)
+
+当使用 `docker volume create temp` 创建一个名为`temp`卷并将它挂载到容器时（例如 `-v temp:/clashmeta`），Docker 会自动管理这个卷。如果容器中指定的挂载目标目录（即 `/clashmeta`）已经有文件，而挂载的卷是空的，Docker 不会覆盖原有的文件。相反，Docker 会将这些文件复制到卷中，确保容器可以正常工作。这就是为什么当你使用 Docker 卷时，`/clashmeta` 的内容不会被覆盖。
+
+## 3.3 绑定挂载 (`bind mount`)
+
+当使用 `mkdir -p ~/temp` 创建一个本地目录，然后将这个目录绑定到容器时（例如 `-v ~/temp:/clashmeta`），情况会有所不同。`bind mount` 是一种直接将宿主机的文件系统目录挂载到容器的方式：
+
+- 如果宿主机的目录已经有内容，那么容器内的目标目录将显示宿主机目录中的内容。
+- 如果宿主机目录为空，那么它会 **覆盖** 容器内的目标目录，使得目标目录 `/clashmeta` 的原始内容不可见，宿主机的目录内容（即使为空）优先级更高。
+
+这解释了为什么当使用 `~/temp` 本地目录作为挂载点时，它会覆盖容器的 `/clashmeta` 目录的内容。
+
+## 3.4 总结
+
+- **卷挂载** ：Docker 卷默认是空的，挂载到容器时不会覆盖容器内已有的数据，Docker 会将容器内的文件复制到卷中。
+- **绑定挂载** ：绑定挂载会直接使用宿主机的目录替换容器内的目标目录，导致目标目录的内容不可见。如果宿主机目录为空，容器中的内容也会被覆盖为空。
+
