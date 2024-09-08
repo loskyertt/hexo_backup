@@ -21,9 +21,9 @@ kate ~/.zshrc
 ```txt
 # where proxy
 proxy(){
-  export http_proxy="http://127.0.0.1:12334"
-  export https_proxy="http://127.0.0.1:12334"
-  echo "HTTP Proxy on by hiddify"
+  export http_proxy="http://127.0.0.1:7890"
+  export https_proxy="http://127.0.0.1:7890"
+  echo "HTTP Proxy on"
 }
 
 # where noproxy
@@ -62,7 +62,7 @@ chsh -s $(which zsh)
 echo $SHELL
 ```
 
-## 2.2 样式配置（prompt/PS1）
+## 2.2 zsh prompt
 
   | Code   | Info                              |
   | ------ |:---------------------------------:|
@@ -82,41 +82,52 @@ echo $SHELL
   | %F{色码} | 用来设定某个颜色的开始                       |
   | %f     | 用来设定成预设的样式， 也可以说是设定好的颜色结束         |
 
-- **换行示例：**
+### 2.2.1推荐配置
 
-```
-NEWLINE=$'\n'
-PROMPT="%{$fg[green]%}%d %t %{$reset_color%}%# ${NEWLINE}"
-```
+关于自定义`git prompt`。参考这两篇文章：
+- [Show current branch on prompt on zsh shell](https://stackoverflow.com/questions/67587439/show-current-branch-on-prompt-on-zsh-shell)
+- [Simplest ZSH Prompt Configs for Git Branch Name](https://medium.com/pareture/simplest-zsh-prompt-configs-for-git-branch-name-3d01602a6f33)
 
-- **显示git分支：**
+关于自定义`conda prompt`。参考这篇论坛：
+- [how to modify the anaconda environment prompt in zsh?](https://unix.stackexchange.com/questions/656045/how-to-modify-the-anaconda-environment-prompt-in-zsh)
 ```
-parse_git_branch() {
-  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+# ~/.zshrc
+# Find and set branch name var if in git repository.
+function git_branch_name()
+{
+  branch=$(git symbolic-ref HEAD 2> /dev/null | awk 'BEGIN{FS="/"} {print $NF}')
+  if [[ $branch == "" ]];
+  then
+    :
+  else
+    echo '- ('$branch')'
+  fi
 }
+
+# Enable substitution in the prompt.
+setopt prompt_subst
+
+precmd_get_conda_env_name() {
+if [[ -n $CONDA_PREFIX ]]; then
+    if [[ $(basename $CONDA_PREFIX) == "miniconda3" ]]; then
+        CONDA_ENV="base"
+    else
+        CONDA_ENV="$(basename $CONDA_PREFIX)"
+    fi
+else
+    CONDA_ENV=""
+fi
+}
+precmd_functions+=( precmd_get_conda_env_name )
+precmd_update_prompt() {
+    PROMPT=$'\n'"%B%F{119}[%F{green}%D{%m/%d %H:%M}%F{119}] %F{red}%n%F{blue}@%F{yellow}%m%F{black}:%F{cyan}%~%B%F{70}$(git_branch_name)"$'\n'"%F{magenta}$CONDA_ENV%F{119} ➜ %f%b"
+}
+precmd_functions+=( precmd_update_prompt )
 ```
-
-### 2.2.1推荐配置：
-
-- **主机1配置：**
-```txt
-# PROMPT
-NEWLINE=$'\n' # 换行
-PS1="%F{111}╭─%f%B%F{2}%D%f %F{3}%*%f%b [%F{184}%n-%M%f@%F{30}%~%f]${NEWLINE}%F{111}╰─❯%f"
-```
-
-- **主机2配置：**
-```txt
-# PROMPT
-NEWLINE=$'\n' # 换行
-PS1="%U%B%F{43}%D%f %F{30}%*%f%b%u [%F{184}%n-%M%f@%F{30}%~%f]${NEWLINE}%F{220}==>%f"
-```
-
-推荐两套主机用不同的配置，这样在用 SSH 进行远程操控时，方便辨别。
 
 ## 2.3 插件配置
 
-- **备份（你面配置失败，最好备份下）：**
+- **备份（避免配置失败，最好备份下）：**
 ```bash
 cp ~/.zshrc ~/.zshrc.backup
 ```
