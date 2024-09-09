@@ -125,6 +125,12 @@ docker run -p 8080:80/udp my_image
 
 这个命令将容器的 `80` 端口映射到宿主机的 `8080` 端口，使用 UDP 协议。
 
+## 1.9 重命名容器
+
+```bash
+docker rename <container_name1> <container_name2>
+```
+
 # 二、容器操作
 
 这里以`ubutnu`镜像为例。
@@ -172,3 +178,48 @@ docker exec -it ubuntu-test bash
 - **卷挂载** ：Docker 卷默认是空的，挂载到容器时不会覆盖容器内已有的数据，Docker 会将容器内的文件复制到卷中。
 - **绑定挂载** ：绑定挂载会直接使用宿主机的目录替换容器内的目标目录，导致目标目录的内容不可见。如果宿主机目录为空，容器中的内容也会被覆盖为空。
 
+# 4.推送与备份镜像
+
+## 4.1 推送镜像到 Docker Hub
+
+1. **登录 Docker Hub**
+
+```bash
+docker login --username=<your_DockerHub_name>
+```
+
+2. **标记镜像**
+
+将镜像标记为你的 Docker Hub 存储库。例如，将 `hexo:latest` 标记为 `yourusername/hexo:latest`：
+```bash
+docker tag hexo:latest yourusername/hexo:latest
+```
+
+或者通过提交容器：
+```bash
+docker commit <container_name/id> yourusername/<image_name>:tag
+```
+
+3. **推送镜像**
+
+```bash
+ docker push yourusername/<image_name>:tag
+```
+
+## 4.1 备份镜像到本地
+
+1. **保存镜像**
+
+使用 `docker save` 命令将镜像保存到一个 tar 文件。例如，将 `hexo:latest` 保存到 `hexo_latest.tar`：
+
+```bash
+docker save -o hexo_latest.tar hexo:latest
+```
+
+2. **加载镜像**
+
+以后可以使用 `docker load` 命令从 tar 文件加载镜像。例如，从 `hexo_latest.tar` 加载镜像：
+
+```bash
+docker load -i hexo_latest.tar
+```

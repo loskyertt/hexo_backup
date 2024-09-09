@@ -223,6 +223,66 @@ mv /test.txt ~/temp
 
 总结下`rm`、`cp`、`mv`这三种指令，对文件夹操作都会加上`-r`。这里表示`加上`-r`（或`--recursive`）选项后，这些命令会递归地操作目录及其内容。
 
+### 2.5.7 find 指令
+
+1. **基本语法** ：
+```bash
+find [路径] [选项] [表达式]
+```
+
+2. **查找特定目录下的所有文件** ：
+```bash
+find /path/to/directory
+```
+
+3. **根据文件名查找** ：
+```bash
+find /path/to/directory -name "filename.txt"
+```
+使用 `-iname` 可以进行不区分大小写的查找：
+```bash
+find /path/to/directory -iname "filename.txt"
+```
+
+1. **查找特定类型的文件** ：
+查找所有目录：
+```bash
+find /path/to/directory -type d
+```
+查找所有普通文件：
+```bash
+find /path/to/directory -type f
+```
+
+2. **根据文件大小查找** ：
+查找大于 1MB 的文件：
+```bash
+find /path/to/directory -size +1M
+```
+
+3. **根据修改时间查找** ：
+查找最近 7 天内修改过的文件：
+```bash
+find /path/to/directory -mtime -7
+```
+
+4. **执行命令** ：
+找到文件后执行命令，例如删除找到的文件：
+```bash
+find /path/to/directory -name "filename.txt" -exec rm {} \;
+```
+
+5. **查找并列出文件的详细信息**：
+```bash
+find /path/to/directory -name "filename.txt" -ls
+```
+
+6. **结合多个条件** ：
+查找所有 `.txt` 文件并且大小大于 1MB：
+```
+find /path/to/directory -name "*.txt" -size +1M
+```
+
 ## 2.3 赋予文件或文件夹权限
 
 1. 使用`chmod`命令递归地更改文件夹内所有文件和子文件夹的权限：
@@ -380,3 +440,34 @@ sudo debugfs -R 'stat <inode>' /dev/sdXn
 MAKEFLAGS="-j$(nproc)"
 ```
 `$(nproc)`会自动检测 CPU 核心数，并设置相同数量的并行任务。包括在执行`make`指令时，可以通过加`-j<核心数>`来手动指定编译时用CPU的核心数。
+
+# 四、用户操作
+
+## 4.1 创建一个新用户
+
+```bash
+sudo useradd -m <new_username>
+```
+`-m`：创建用户的同时生成一个主目录。
+
+为新用户设置密码：
+```bash
+sudo passwd <new_username>
+```
+
+如果希望新用户拥有管理员权限，可以将其加入`sudo`组：
+```bash
+sudo usermod -aG sudo <new_username>
+```
+Arch 系的发行版是用下面这种方式：
+```bash
+sudo usermod -aG wheel <new_username>
+```
+
+## 4.2 移除用户
+
+删除用户及其主目录：
+```bash
+sudo userdel -r <username>
+```
+`-r`：删除用户的同时移除用户的主目录及文件。如果不使用`-r`，只会删除用户账号，不会删除用户的主目录和文件。

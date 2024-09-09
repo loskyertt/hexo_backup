@@ -4,6 +4,7 @@ date: 2024-07-19 03:36:58
 tags:
     - "proxy"
 excerpt: false
+categories: "科学上网"
 ---
 
 
