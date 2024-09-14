@@ -106,8 +106,8 @@ kate /etc/systemd/system/docker.service.d/proxy.conf
 
 ```txt
 [Service]
-Environment="HTTP_PROXY=http://127.0.0.1:12334"
-Environment="HTTPS_PROXY=http://127.0.0.1:12334"
+Environment="HTTP_PROXY=http://127.0.0.1:7890"
+Environment="HTTPS_PROXY=http://127.0.0.1:7890"
 ```
 
 这里需要根据自己实际的代理端口填写。
@@ -116,8 +116,8 @@ Environment="HTTPS_PROXY=http://127.0.0.1:12334"
 
 ```
 [Service]
-Environment="HTTP_PROXY=http://proxy.example.com:<port>"
-Environment="HTTPS_PROXY=https://proxy.example.com:<port>"
+Environment="HTTP_PROXY=http://127.0.0.1:7890"
+Environment="HTTPS_PROXY=http://127.0.0.1:7890"
 Environment="NO_PROXY=your-registry.com,10.10.10.10,*.example.com"
 ```
 
@@ -142,7 +142,7 @@ sudo systemctl show --property=Environment docker
 像输出以下内容就成功了：
 
 ```
-Environment=HTTP_PROXY=http://127.0.0.1:12334 HTTPS_PROXY=http://127.0.0.1:12334
+Environment=HTTP_PROXY=http://127.0.0.1:7890 HTTPS_PROXY=http://127.0.0.1:7890
 ```
 
 ## 1.4 命令简化配置
