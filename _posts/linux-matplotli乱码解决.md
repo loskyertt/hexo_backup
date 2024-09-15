@@ -67,7 +67,7 @@ nano matplotlibrc
 ```
 
 找到`font.serif`，`font.sans-serif`所在位置，如下如所示。在冒号后面加入`SimHei`，保存退出：
-![修改的地方](https://ask.qcloudimg.com/http-save/7111610/0607e838f2d09fae745de8c5950949ef.png)
+[![修改的地方](https://s21.ax1x.com/2024/09/15/pAuJFz9.md.png)](https://imgse.com/i/pAuJFz9)
 
 ## 2.3 清理缓存
 
