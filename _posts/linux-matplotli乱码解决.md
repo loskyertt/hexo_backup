@@ -3,9 +3,10 @@ title: 解决 Linux 下使用 matplotlib 中文乱码问题
 date: 2024-09-14 15:01:53
 tags:
     - "matplotlib"
+    - "python"
     - "linux"
 excerpt: false
-categories: "Python"
+categories: "Python技巧"
 ---
 
 
