@@ -46,11 +46,11 @@ mkdir ~/clashmeta && cd clashmeta
 
 ## 2.4 UI 文件
 
-[ui 下载](https://github.com/loskyertt/clash_meta/blob/master/ui.tgz)
+[ui 下载](https://github.com/MetaCubeX/metacubexd)
 
 # 3.拉取镜像
 
-mihomo 的作者在 Docker Hub 上是有镜像的，但是里面没有说明文档，不知道怎么用，所以就没用它的镜像。
+mihomo 的作者在 Docker Hub 上是有镜像的，但是里面没有说明文档，我在后面进行补充。
 
 直接拉取最新的稳定版本的 debian 镜像即可：
 ```bash
@@ -86,74 +86,39 @@ dpkg -i mihomo-linux-amd64-v1.18.6.deb
 
 # 5.使用现成的镜像配置
 
-## 5.1 方式一
-
-如果以上步骤觉得太麻烦，可以使用我推送到 Docker Hub 上的镜像：
+拉取镜像：
 ```bash
-docker pull loskyertt/clashmeta:debian-v1.8.16
+docker pull metacubex/mihomo:latest
 ```
 
-然后先创建临时容器：
+如果当前网络环境不行的话，也可以使用我存放在阿里的镜像：
 ```bash
-docker run -it --name=temp loskyertt/clashmeta:debian-v1.8.16 /bin/bash
-```
-然后输入`exit`退出。
-
-把`clashmeta`文件复制到宿主机：
-```bash
-docker cp temp:/root/clashmeta_backup/ ~/
+docker pull registry.cn-hangzhou.aliyuncs.com/loskyertt/meta:1.18.8
 ```
 
-重命名：
+创建卷挂在目录：
 ```bash
-mv clashmeta_backup clashmeta
+docker volume create mihomo
 ```
 
-可以把该临时容器停止并删除：
+创建容器实例：
 ```bash
-docker stop temp && docker rm temp
+docker run -itd --name=mihomo --restart=always -p7890:7890 -p9090:9090 -v mihomo:/root/.config/mihomo metacubex/mihomo:latest
 ```
 
-重新创建一个容器，可以实现代理（记得修改`config.yml`文件）：
+然后把配置文件（`config.yaml`）和`ui`文件移到卷挂载目录下：
 ```bash
-docker run -it --name clashmeta -p 7890:7890 -p 9090:9090 -v ~/clashmeta:/root/clashmeta loskyertt/clashmeta:debian-v1.8.16 /bin/bash
+sudo mv config.yaml /var/lib/docker/volumes/mihomo/_data/
 ```
 
-开启代理
 ```bash
-cd /root/clashmeta
-
-mihomo -d ./
-```
-然后打开浏览器输入`http://127.0.0.1:9090/ui`就能进入代理界面。
-
-## 5.2 方式二（推荐）
-
-还是使用现成的镜像：
-```bash
-docker pull loskyertt/clashmeta:1.8.16
+sudo mv ui /var/lib/docker/volumes/mihomo/_data/
 ```
 
-直接创建容器：
+重启容器即可：
 ```bash
-docker run -itd --restart always --name clashmeta --workdir /clashmeta/ -p 7890:7890 -p 9090:9090 loskyertt/clashmeta:1.8.16 mihomo -d ./
+docker restart mihomo
 ```
-
-把配置文件复制到主机当前目录：
-```bash
-docker cp clashmeta:/clashmeta/config.yaml .
-```
-
-修改配置文件，在里面填入自己的订阅链接，然后重新把配置文件复制进去覆盖掉：
-```bash
-docker cp config.yaml clashmeta:/clashmeta/
-```
-
-重启容器：
-```bash
-docker restart clashmeta
-```
-然后打开浏览器输入`http://127.0.0.1:9090/ui`就能进入代理界面。
 
 # 6.结果图
 
