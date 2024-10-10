@@ -92,3 +92,12 @@ rm ~/.cache/matplotlib -rf
 
 - [【Deepin20系统】Linux系统中永久解决matplotlib画图中文乱码问题和使用seaborn中文乱码问题](https://developer.aliyun.com/article/1577567)
 - [解决Python使用matplotlib绘图时出现的中文乱码问题](https://cloud.tencent.com/developer/article/1877673)
+
+# 4.负号乱码解决
+
+只要在前面加以段这个代码：
+```Python
+# 解决负号显示问题
+plt.rcParams['axes.unicode_minus'] = False
+```
+就能正常显示负号
