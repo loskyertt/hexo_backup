@@ -3,7 +3,7 @@ title: Python 爬虫教程 01
 date: 2024-09-17 12:25:45
 tags:
     - "python"
-excerpt: false
+excerpt: "初始爬虫，爬虫的基础教程"
 categories: "Python爬虫"
 ---
 
