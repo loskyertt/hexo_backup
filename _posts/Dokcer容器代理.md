@@ -97,6 +97,8 @@ env | grep -i proxy
 
 ## 2.2 方式二（bridge 模式）
 
+### 2.2.1 通过修改容器内的终端配置文件
+
 运行完后退出容器：
 ```bash
 docker run -it --name=test ubuntu
@@ -134,6 +136,17 @@ noproxy(){
 }
 ```
 
-### 2.2.1 原理
+### 2.2.2 直接在`docker run`命令中指定代理
+
+使用`--env`参数设置代理环境变量：
+```bash
+docker run -it --name=my-container \
+    --env HTTP_PROXY=http://your-proxy-server:port \
+    --env HTTPS_PROXY=http://your-proxy-server:port \
+    my-image
+```
+`your-proxy-server`需要替换为代理服务器或者宿主机的`ip`地址，`port`是代理端口。
+
+### 2.2.3 原理
 
 如果是在桥接模式下在容器中使用 `127.0.0.1` 来访问宿主机的服务（如代理服务），这个 IP 地址将指向容器本身，而不是宿主机。因此要让容器访问宿主机上的服务（例如宿主机上的代理服务），应该使用宿主机的实际 IP 地址，或者在 Docker 中使用特定的地址来实现宿主机的访问。
