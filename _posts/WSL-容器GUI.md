@@ -1,6 +1,6 @@
 ---
 title: WSL2 和 Docker 容器中运行 GUI 程序
-date: 2024-11-12 21:16:31
+date: 2024-11-27 12:14:33
 tags:
     - "WSL"
     - "linux"
