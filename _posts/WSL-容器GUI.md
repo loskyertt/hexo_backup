@@ -102,3 +102,22 @@ xclock
 
 如下图所示：
 [![VSCode中运行.png](https://s21.ax1x.com/2024/11/27/pA4NtAA.png)](https://imgse.com/i/pA4NtAA)
+
+注意：如果是在 Linux 系统下，在 VSCode 中运行可能会出现这样的错误：
+```txt
+root@710c5762df8e:~# xclock
+Authorization required, but no authorization protocol specified
+Error: Can't open display: :0
+```
+意味着当前用户或容器中的环境没有被授权访问`X11`显示服务器（`DISPLAY=:0`）。这是一个典型的`X11`权限问题。
+
+只需呀在宿主机上运行以下命令，允许容器的用户访问显示服务：
+```bash
+xhost +local:docker
+```
+这样再运行`xclock`就能成功了。
+
+如果希望更安全，只允许特定用户访问，可以指定用户（比如这里指定`root`用户）：
+```bash
+xhost +SI:localuser:root
+```
