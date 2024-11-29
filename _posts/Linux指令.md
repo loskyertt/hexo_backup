@@ -106,6 +106,24 @@ sudo pacman -Rns $(pacman -Qtdq)
 - `pacman -Qtdq`：列出所有未使用的孤立包。
 - `-Rns`：递归地卸载未使用的包及其配置文件。
 
+## 1.5 查看安装包的文件及其路径
+
+```bash
+sudo pacman -Ql boost
+```
+
+输出示例：
+```txt
+boost /usr/share/boostbook/xsl/source-highlight.xsl
+boost /usr/share/boostbook/xsl/template.xsl
+boost /usr/share/boostbook/xsl/testing/
+boost /usr/share/boostbook/xsl/testing/Jamfile.xsl
+boost /usr/share/boostbook/xsl/testing/testsuite.xsl
+boost /usr/share/boostbook/xsl/type.xsl
+boost /usr/share/boostbook/xsl/utility.xsl
+boost /usr/share/boostbook/xsl/xhtml.xsl
+boost /usr/share/boostbook/xsl/xref.xsl
+```
 
 
 # 二、常用指令
@@ -433,6 +451,7 @@ sudo debugfs -R 'stat <inode>' /dev/sdXn
 # 三、提高编译速度的方法
 
 ## 3.1 增加编译并行度
+
 可以通过设置更多的并行编译任务来加速编译过程。使用与 CPU 核心数量相等或更多的并行任务数。设置 MAKEFLAGS 来实现这一点：
 
 编辑 /etc/makepkg.conf 文件，找到以下行并进行修改：
