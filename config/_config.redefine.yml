@@ -82,7 +82,10 @@ global:
   # Whether to enable Preloader.
   preloader: true
   # Whether to enable open graph
-  open_graph: true
+  open_graph: 
+      enable: true
+      image: your_image_path
+      description: your_description
   # Google Analytics
   google_analytics:
     enable: false # Whether to enable Google Analytics
