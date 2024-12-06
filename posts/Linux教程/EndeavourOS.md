@@ -25,8 +25,9 @@ sudo pacman -Syu base-devel dkms
 对于新版本的显卡型号，直接运行下面这条指令即可：
 ```bash
 # 必须安装
-sudo pacman -S nvidia nvidia-settings lib32-nvidia-utils
+sudo pacman -S nvidia nvidia-settings nvidia-utils
 ```
+如果有切换内核的需求，那么把`nvidia`换成`nvidia-dkms`即可。
 
 ## 1.2 安装方式二
 
@@ -145,6 +146,8 @@ export QT_IM_MODULE=fcitx
 export XMODIFIERS="@im=fcitx"
 ```
 
+如果是安装`fcitx5`，参照官网[fcitx5 Arch wiki](https://wiki.archlinuxcn.org/wiki/Fcitx5)。
+
 ## 2.2 其它（没试过）
 
 **方式一：**
@@ -230,6 +233,8 @@ sudo su
 nano /etc/pacman.d/mirrorlist
 ```
 然后把镜像源加进去。
+
+如果要添加`aurcn`源，参照 **清华镜像源镜像** 即可。
 
 ## 3.3 签名验证问题
 
