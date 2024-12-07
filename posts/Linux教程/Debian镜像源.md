@@ -99,3 +99,8 @@ sudo apt install ca-certificates
 ```
 
 安装完 `ca-certificates` 后，删除或注释掉该配置以恢复安全性。
+
+也可以直接在命令行临时禁用：
+```bash
+apt -o Acquire::https::Verify-Peer=false -o Acquire::https::Verify-Host=false update
+```
