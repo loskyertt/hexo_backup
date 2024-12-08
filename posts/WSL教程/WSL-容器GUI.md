@@ -130,13 +130,7 @@ xhost +SI:localuser:root
 
 运行容器时，挂载 Wayland 必需的 Socket 和环境变量：
 ```bash
-docker run -it \
-    --name=test-wayland
-    -e WAYLAND_DISPLAY=$WAYLAND_DISPLAY \
-    -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
-    -v $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY:$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY \
-    --device=/dev/dri \
-    ubuntu:latest
+docker run -it --name=test-wayland -e WAYLAND_DISPLAY=$WAYLAND_DISPLAY -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR -v $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY:$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY --device=/dev/dri ubuntu:latest
 ```
 
 解释：
