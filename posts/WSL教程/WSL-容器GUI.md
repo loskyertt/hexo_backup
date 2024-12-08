@@ -8,9 +8,9 @@ tags:
 excerpt: "本文主要介绍如何在 WSL2 或者 Docker 容器中运行 GUI 程序。"
 ---
 
-# 1.WSL2 执行 GUI 程序
+# 1.WSL2 执行 GUI 程序（X11）
 
-需要在 Windows 上安装`MobaXterm`，这里推荐安装中文版的（原版可以在官网下载）：[中文版`Mobaxterm](https://github.com/RipplePiam/MobaXterm-Chinese-Simplified?tab=readme-ov-file)。这个软件自带`x11-server`。
+需要在 Windows 上安装`MobaXterm`，这里推荐安装中文版的（原版可以在官网下载）：[中文版 Mobaxterm](https://github.com/RipplePiam/MobaXterm-Chinese-Simplified?tab=readme-ov-file)。这个软件自带`x11-server`。
 
 然后只需要在 WSL2 （Linux 子系统发行版）中安装`x11-apps`即可。
 
@@ -46,7 +46,9 @@ DISPALY=<你的宿主机的IP>:0 xclock
 ```
 比如：`DISPALY=172.27.158.40:0 xclock`。
 
-# 2.Docker 容器中执行 GUI 程序
+---
+
+# 2.Docker 容器中执行 GUI 程序（X11）
 
 整体操作方式跟在 WSL2 中是一样的，这里以 Docker 的`ubuntu`镜像为例子。
 
@@ -121,3 +123,67 @@ xhost +local:docker
 ```bash
 xhost +SI:localuser:root
 ```
+
+---
+
+# 3.Docker 容器中执行 GUI 程序（Wayland）
+
+运行容器时，挂载 Wayland 必需的 Socket 和环境变量：
+```bash
+docker run -it \
+    --name=test-wayland
+    -e WAYLAND_DISPLAY=$WAYLAND_DISPLAY \
+    -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
+    -v $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY:$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY \
+    --device=/dev/dri \
+    ubuntu:latest
+```
+
+解释：
+- `-e WAYLAND_DISPLAY=$WAYLAND_DISPLAY`：传递 Wayland 显示环境变量（通常为 `wayland-0`）。
+- `-e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR`：传递 Wayland 的运行时目录。
+- `-v $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY:$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY`：挂载 Wayland Socket 文件。
+- `--device=/dev/dri`：允许容器访问 GPU。
+
+---
+
+## 3.1 在容器中验证 Wayland 配置
+
+进入容器后，验证环境是否正确：
+
+1. 检查 `WAYLAND_DISPLAY`：
+```bash
+echo $WAYLAND_DISPLAY
+```
+应返回 `wayland-0` 或类似内容。
+
+2. 检查 `XDG_RUNTIME_DIR`：
+```bash
+echo $XDG_RUNTIME_DIR
+ls $XDG_RUNTIME_DIR
+```
+应包含 `wayland-0`。
+
+---
+
+## 3.2 运行 Weston-terminal（测试）
+1. 安装 Weston 系列程序：
+```bash
+apt install -y weston
+```
+
+1. 运行 Weston-terminal 测试：
+```bash
+weston-terminal
+```
+如果配置正确，应该会打开一个终端窗口。如下图所示：
+![Snipaste_2024-12-08_13-17-50.png](https://s2.loli.net/2024/12/08/2vfPZbtHQkBIsdV.png)
+
+---
+
+## 3.3 补充：切换 Wayland/X11 环境
+- 如果你希望 `gedit` 和其他应用也通过 Wayland 运行，可以启动它们时强制启用 Wayland：
+```bash
+WAYLAND_DISPLAY=wayland-0 gedit
+```
+- 如果继续使用 X11，则无需修改。
