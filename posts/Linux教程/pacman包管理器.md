@@ -124,3 +124,9 @@ boost /usr/share/boostbook/xsl/utility.xsl
 boost /usr/share/boostbook/xsl/xhtml.xsl
 boost /usr/share/boostbook/xsl/xref.xsl
 ```
+
+可以加上`grep`进行匹配：
+```bash
+sudo pacman -Ql boost | grep cmake
+```
+在`grep`后加上`-i`参数可以忽略大小写进行匹配查找。

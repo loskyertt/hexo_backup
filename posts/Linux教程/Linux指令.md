@@ -61,6 +61,8 @@ crontab -l
 cat /etc/rc.local
 ```
 
+---
+
 # 2.文件操作
 
 ## 2.1 touch 指令
@@ -188,6 +190,8 @@ find /path/to/directory -name "filename.txt" -ls
 find /path/to/directory -name "*.txt" -size +1M
 ```
 
+---
+
 # 3.权限
 
 1. 使用`chmod`命令递归地更改文件夹内所有文件和子文件夹的权限：
@@ -213,6 +217,8 @@ chmod u+x script.sh
 ```
 `u`参数代表文件的所有者`user`，可以不加，但是就会改变组`group`和其他用户的权限。
 
+---
+
 # 4.解压缩
 
 `tar` 是一个常用的 Unix 和 Linux 工具，用于归档（打包）和压缩文件。
@@ -230,6 +236,8 @@ chmod u+x script.sh
 ```bash
 tar -zxvf archive.tar.gz
 ```
+
+---
 
 # 5.切换为 root 用户
 
@@ -289,6 +297,8 @@ sudo su -
 - **`root` 密码** ：你需要知道 `root` 用户的密码来使用 `su` 命令。`sudo` 需要你当前用户在 `sudoers` 文件中有权限执行 `sudo` 命令，且你需要输入你自己的用户密码。
 - **权限管理** ：在某些系统（如 Ubuntu）默认不启用 `root` 用户的密码，而是通过 `sudo` 提供管理员权限。你可能需要使用 `sudo` 命令而不是 `su` 来获得 `root` 权限。
 
+---
+
 # 6.查看文件大小
 
 ## 6.1 使用 `du` 命令
@@ -322,6 +332,8 @@ ls -lh /path/to/directory
 - **`-l`**：长格式列出文件信息，包括大小。
 - **`-h`**：以人类可读的格式显示文件大小。
 
+---
+
 # 7.查看文件详细信息
 
 1. **使用 `stat` 命令：**
@@ -339,6 +351,8 @@ sudo debugfs -R 'stat <inode>' /dev/sdXn
 3. **文件系统支持：**
 一些文件系统（如 ext4）支持创建时间，而其他文件系统（如 ext3）则可能不支持。如果你在 `stat` 输出中看不到创建时间，可能是因为你的文件系统不支持这一功能。
 
+---
+
 # 8.提高编译速度的方法
 
 ## 8.1 增加编译并行度
@@ -350,6 +364,8 @@ sudo debugfs -R 'stat <inode>' /dev/sdXn
 MAKEFLAGS="-j$(nproc)"
 ```
 `$(nproc)`会自动检测 CPU 核心数，并设置相同数量的并行任务。包括在执行`make`指令时，可以通过加`-j<核心数>`来手动指定编译时用CPU的核心数。
+
+---
 
 # 9.用户操作
 
@@ -381,3 +397,72 @@ sudo usermod -aG wheel <new_username>
 sudo userdel -r <username>
 ```
 `-r`：删除用户的同时移除用户的主目录及文件。如果不使用`-r`，只会删除用户账号，不会删除用户的主目录和文件。
+
+---
+
+# 10.grep 指令
+
+`grep` 是一个强大的文本搜索工具，它在 Unix 和类 Unix 系统（如 Linux）中用于搜索文件中匹配指定模式的行。`grep` 命令的名字来源于全局正则表达式打印（Global Regular Expression Print）。
+
+## 10.1 基本用法
+
+```bash
+grep [选项] 模式 文件
+```
+
+- 模式：你想要搜索的文本模式或正则表达式。
+- 文件：你想要搜索的文件。
+
+## 10.2 常用选项
+
+- `-i`：忽略大小写。
+- `-v`：显示不匹配的行（即显示除了匹配行之外的所有行）。
+- `-c`：显示匹配行的数量，不显示具体内容。
+- `-n`：显示匹配行及行号。
+- `-l`：显示包含匹配行的文件名。
+- `--color`：将匹配的文本高亮显示。
+- `-r` 或 `-R`：递归搜索指定目录下的所有文件。
+- `-e`：允许多个搜索模式。
+
+## 10.3 示例
+
+1. **搜索包含特定文本的行：**
+```bash
+grep "search_text" filename.txt
+```
+
+2. **忽略大小写搜索：**
+```bash
+grep -i "SearchText" filename.txt
+```
+
+3. **显示不匹配的行：**
+```bash
+grep -v "text_to_exclude" filename.txt
+```
+
+4. **显示匹配行的行号：**
+```bash
+grep -n "search_text" filename.txt
+```
+
+5. **递归搜索目录下所有文件：**
+```bash
+grep -r "search_text" /path/to/directory
+```
+
+6. **显示匹配行的数量：**
+```bash
+grep -c "search_text" filename.txt
+```
+
+7. **使用正则表达式搜索：**
+```bash
+grep "^[0-9]" filename.txt
+```
+这个命令会搜索所有以数字开头的行。
+
+8. **使用多个模式搜索：**
+```bash
+grep -e "pattern1" -e "pattern2" filename.txt
+```
