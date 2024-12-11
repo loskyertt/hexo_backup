@@ -31,8 +31,60 @@ export QT_QPA_PLATFORM=xcb
 ```txt
 qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
 ```
+---
 
-# 2.项目构建
+# 2.安装字体
+
+默认情况下，中文字体会安装在以下路径之一：
+
+1. `/usr/share/fonts/noto-cjk/`：用于 **Noto CJK** 字体（推荐）。
+2. `/usr/share/fonts/wenquanyi/`：用于 **文泉驿** 字体。
+3. `/usr/share/fonts/TTF/` 或 `/usr/share/fonts/truetype/`：用于 TTF/OTF 格式的字体文件。
+
+先查看下系统是否有中文字体，使用下面的指令：
+```bash
+fc-list :lang=zh
+```
+如果有输出的话，后面操作就不用管，否则就需要额外安装字体。
+
+在我的系统中（Arch-WSL2），`/usr/share/fonts/` 目录下只显示了以下内容，说明没有中文字体：
+
+- **100dpi 和 75dpi**：  
+  这些是 X11 系统中的点阵字体（bitmap fonts），通常用于较低分辨率的显示器或作为一些旧式程序的备用字体。  
+  - `100dpi` 表示每英寸 100 点的字体。
+  - `75dpi` 表示每英寸 75 点的字体。  
+  这些字体一般用于非常老旧的 X11 应用程序，现代应用通常不需要这些字体。
+
+- **encodings**：  
+  包含字体编码文件，用于定义如何将字符代码映射到字体中的字形。它主要与点阵字体或老式字体相关。
+
+- **util**：  
+  一些字体工具或辅助文件的目录，通常与字体管理或配置有关。
+
+1. 安装 Noto CJK 字体（推荐）
+
+这是 Google 提供的现代中文字体，适用于大多数应用场景：
+
+```bash
+sudo pacman -S noto-fonts-cjk
+```
+
+2. 安装其他中文字体
+
+- **文泉驿字体**：
+```bash
+sudo pacman -S wqy-zenhei wqy-microhei
+```
+- **思源宋体**（Noto Serif CJK）：
+```bash
+sudo pacman -S noto-fonts-emoji noto-fonts-cjk noto-fonts
+```
+
+安装一种即可，安装好后，需要重启系统（我这里只需要重启 Arch-WSL2 子系统）。
+
+---
+
+# 3.项目构建
 
 一个简单的`qt`开发模板：
 ```bash
