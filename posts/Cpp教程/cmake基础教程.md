@@ -62,14 +62,16 @@ cmake -G Ninja -B build
 
 事实上，在性能上：`Ninja > Makefile > MSBuild`。`Makefile`启动时会把每个文件都检测一遍，浪费很多时间。特别是有很多文件，但是实际需要构建的只有一小部分，从而是`I/O Bound`的时候，`Ninja`的速度提升就很明显。然而某些专利公司的`CUDA toolkit`在 Windows 上只允许用`MSBuild`构建，不能用`Ninja`（怕不是和`Bill Gates`有什么交易，哈哈）。
 
-# 3.编译器设置
+# 3.设置
+
+## 3.1 编译器设置
 
 可以在`CMakeLists.txt`中添加：
 ```CMake
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang++)
 ```
-指定编译器为`clang`和`clang++`。不指定的话，默认是`gcc`和`g++`。
+指定编译器为`clang`和`clang++`。不指定的话，默认是`gcc`和`g++`。这两条命令应该放在文件的开始位置（`cmake_minimum_required`之下，其他命令之上），否则可能无效。
 
 也可以在命令行阶段指定：
 ```bash

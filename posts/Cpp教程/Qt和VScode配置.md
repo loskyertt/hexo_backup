@@ -31,6 +31,17 @@ export QT_QPA_PLATFORM=xcb
 ```txt
 qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
 ```
+
+如果是在 Linux 发行版上的话（能支持`wayland`会话的），可能会出现这样的问题：
+```txt
+QApplication: invalid style override 'kvantum' passed, ignoring it.
+        Available styles: Breeze, Windows, Fusion
+```
+这是 Qt 程序的`ui`样式，提示`kvantum`样式不可用，可用的有`Breeze`，`Windows`，`Fusion`这三种。所以还需要设置环境变量，把下面这行内容添加到`.bashrc`或者`.zshrc`中（取决于自己用的`shell`）：
+```bash
+export QT_STYLE_OVERRIDE=Fusion
+```
+
 ---
 
 # 2.安装字体
