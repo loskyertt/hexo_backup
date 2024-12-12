@@ -77,3 +77,61 @@ set(CMAKE_CXX_COMPILER clang++)
 ```bash
 cmake -B build -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
 ```
+
+# 4.查找第三方库（以 Qt 为例）
+
+## 4.1 `set(CMAKE_PREFIX_PATH "...")`
+
+- **作用：**  
+  设置一个搜索路径列表，供 CMake 的 `find_package()` 和其他查找命令使用。  
+  - CMake 会在指定的路径下，递归搜索各种配置文件（如 `*.cmake`）。
+  - 它是一个通用的全局路径变量，不仅适用于 Qt，还适用于其他外部库。
+
+- **适用场景：**
+  当你需要 CMake 查找多个不同的外部库或模块，并希望统一管理搜索路径时，使用 `CMAKE_PREFIX_PATH` 是最佳选择。
+
+- **工作机制：**
+  - 查找时会从 `CMAKE_PREFIX_PATH` 指定的目录中依次搜索。
+
+- **优点：**
+  - 更通用，可以适配不同的路径组织结构。
+  - 统一管理多个依赖库的搜索路径。
+
+示例：
+```cmake
+set(CMAKE_PREFIX_PATH "/opt/Qt/6.8.0/gcc_64")
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+```
+这里会在 `/opt/Qt/6.8.0/gcc_64` 下递归寻找 `lib/cmake/Qt6/Qt6Config.cmake` 或其他类似的配置文件。
+
+## 4.2 `set(Qt_dir "...")`
+
+- **作用：**
+  这是一个项目自定义变量（`Qt_dir` 的名字是随意的），用于直接指向 Qt 的具体路径（通常是 `Qt6Config.cmake` 所在的目录）。
+  - CMake 本身对 `Qt_dir` 变量没有特殊处理。
+  - 它可以在代码中手动使用，比如直接传递给 `find_package()` 的 `HINTS` 参数。
+
+- **适用场景：**
+  如果你只需要为当前项目指定一个特定的 Qt 路径，可以用这种方式。不过，这种方式需要手动确保路径的正确性，并显式使用。
+
+- **工作机制**:
+  - `Qt_dir` 不会影响 CMake 的全局搜索行为，除非在查找时手动传递它。
+
+- **优点**:
+  - 更精确地指定路径，避免其他可能的干扰。
+  - 灵活性更高，适合需要手动控制路径的场景。
+
+示例：
+```cmake
+set(Qt_dir /opt/Qt/6.8.0/gcc_64/lib/cmake/Qt6)
+find_package(Qt6 REQUIRED COMPONENTS Widgets HINTS ${Qt_dir})
+```
+
+## 4.3 总结对比
+
+| **属性**                | **`CMAKE_PREFIX_PATH`**                     | **`Qt_dir`**                         |
+|-------------------------|---------------------------------------------|--------------------------------------|
+| **作用范围**            | 全局作用于所有 `find_package` 调用         | 仅作用于手动指定的 `find_package`   |
+| **使用场景**            | 管理多个依赖库的路径                      | 精确指定单个库的路径                |
+| **灵活性**              | 自动化程度高，路径可递归搜索               | 需要显式控制，灵活性高              |
+| **典型用法**            | 为整个项目设置通用的依赖路径              | 指定特殊或非标准路径                |
