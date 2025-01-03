@@ -33,7 +33,7 @@ export LC_ALL=zh_CN.UTF-8
 
 然后执行：
 ```bash
-source /etc/profile
+source ~/.bashrc
 ```
 
 ## 2.2 方式二：修改`/etc/profile`文件

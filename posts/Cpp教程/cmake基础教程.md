@@ -78,7 +78,9 @@ set(CMAKE_CXX_COMPILER clang++)
 cmake -B build -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
 ```
 
-# 4.查找第三方库（以 Qt 为例）
+# 4.查找第三方库（非默认路径）
+
+有时安装的第三方库没有安装在系统环境变量路径，此时需要手动添加。
 
 ## 4.1 `set(CMAKE_PREFIX_PATH "...")`
 
@@ -86,6 +88,7 @@ cmake -B build -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
   设置一个搜索路径列表，供 CMake 的 `find_package()` 和其他查找命令使用。  
   - CMake 会在指定的路径下，递归搜索各种配置文件（如 `*.cmake`）。
   - 它是一个通用的全局路径变量，不仅适用于 Qt，还适用于其他外部库。
+  - ***完全控制搜索路径，不使用默认路径，也就是说会覆盖默认的`CMAKE_PREFIX_PATH`。***
 
 - **适用场景：**
   当你需要 CMake 查找多个不同的外部库或模块，并希望统一管理搜索路径时，使用 `CMAKE_PREFIX_PATH` 是最佳选择。
@@ -99,12 +102,33 @@ cmake -B build -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
 
 示例：
 ```cmake
-set(CMAKE_PREFIX_PATH "/opt/Qt/6.8.0/gcc_64")
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+set(CMAKE_PREFIX_PATH "/opt/Qt/6.8.0/gcc_64/lib/cmake/Qt6/")
+find_package(Qt6 REQUIRED COMPONENTS Widgets Core)
 ```
-这里会在 `/opt/Qt/6.8.0/gcc_64` 下递归寻找 `lib/cmake/Qt6/Qt6Config.cmake` 或其他类似的配置文件。
+这里会在 `/opt/Qt/6.8.0/gcc_64/lib/cmake/Qt6/` 下寻找 `Qt6Config.cmake` 配置文件。
 
-## 4.2 `set(Qt_dir "...")`
+可以同时添加多条路径：`set(CMAKE_PREFIX_PATH "/opt/custom_lib1;/opt/custom_lib2")`。
+
+## 4.2 `list(APPEND ...)`（推荐）
+
+**作用：** 该命令的目的是将一个新的路径添加到 CMake 的 CMAKE_PREFIX_PATH 变量，让 CMake 在该路径下查找依赖库（find_package 查找时会用到）。通过`list(APPEND ...)`，可以在`CMAKE_PREFIX_PATH`变量的末尾添加新的路径。
+
+示例：
+```cmake
+list(APPEND CMAKE_PREFIX_PATH /opt/Qt/6.8.0/gcc_64/lib/cmake/Qt6/)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Core)
+```
+
+可以同时添加多个路径：
+```cmake
+list(APPEND CMAKE_PREFIX_PATH 
+    ${CMAKE_SOURCE_DIR}/install/boost_1_82_0 
+    ${CMAKE_SOURCE_DIR}/install/pcl_1_14 
+    ${CMAKE_SOURCE_DIR}/install/qt6
+)
+```
+
+## 4.3 `set(Qt_dir "...")`
 
 - **作用：**
   这是一个项目自定义变量（`Qt_dir` 的名字是随意的），用于直接指向 Qt 的具体路径（通常是 `Qt6Config.cmake` 所在的目录）。
@@ -126,12 +150,3 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 set(Qt_dir /opt/Qt/6.8.0/gcc_64/lib/cmake/Qt6)
 find_package(Qt6 REQUIRED COMPONENTS Widgets HINTS ${Qt_dir})
 ```
-
-## 4.3 总结对比
-
-| **属性**                | **`CMAKE_PREFIX_PATH`**                     | **`Qt_dir`**                         |
-|-------------------------|---------------------------------------------|--------------------------------------|
-| **作用范围**            | 全局作用于所有 `find_package` 调用         | 仅作用于手动指定的 `find_package`   |
-| **使用场景**            | 管理多个依赖库的路径                      | 精确指定单个库的路径                |
-| **灵活性**              | 自动化程度高，路径可递归搜索               | 需要显式控制，灵活性高              |
-| **典型用法**            | 为整个项目设置通用的依赖路径              | 指定特殊或非标准路径                |

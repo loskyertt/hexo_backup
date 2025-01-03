@@ -1,5 +1,5 @@
 ---
-title: 如何手动编译 PCL 库
+title: 编译 PCL 库
 date: 2024-12-04 10:03:27
 tags:
     - "c++"
@@ -151,9 +151,9 @@ make install
 
 2. **方式二：安装到指定目录**
 
-比如要安装到`/root/pcl_1.14/`目录下：
+比如要安装到`/opt/pcl_1.14/`目录下：
 ```bash
-mkdir /root/pcl_1.14
+mkdir /opt/pcl_1.14
 ```
 
 开始编译：
@@ -164,14 +164,14 @@ mkdir build
 
 cd build
 
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/root/pcl_1.14
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/pcl_1.14
 
 make -j8
 
 make install
 ```
 
-这种方式会把`pcl`安装到`/root/pcl_1.14`下，`pcl_1.14`下的文件结构是这样的：
+这种方式会把`pcl`安装到`/opt/pcl_1.14`下，`pcl_1.14`下的文件结构是这样的：
 ```txt
 .
 ├── bin
@@ -180,23 +180,4 @@ make install
 └── share
 
 5 directories, 0 files
-```
-
-如果是安装到指定的目录，在配置`CMakeLists.txt`时，略有不同：
-```cmake
-# 设置 PCL 的安装目录（这个路径包含 PCL 的 CMake 配置文件）
-set(PCL_DIR "/root/pcl_1.14/share/pcl-1.14")
-
-# 查找 PCL 包
-find_package(PCL REQUIRED)
-
-# 设置编译选项
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-
-# 添加可执行文件
-add_executable(your_project main.cpp)
-
-# 链接 PCL 库
-target_link_libraries(your_project ${PCL_LIBRARIES})
 ```
